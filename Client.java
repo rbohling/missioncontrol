@@ -5,7 +5,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class StationClient {
+public class Client {
     private static final String HOST = "127.0.0.1";
     private static final int PORT = 5000;
 
@@ -16,7 +16,7 @@ public class StationClient {
                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
                 Scanner scanner = new Scanner(System.in)
         ) {
-            System.out.println("Connected to Mission Control at " + HOST + ":" + PORT);
+            System.out.println("Connected to server at " + HOST + ":" + PORT);
             System.out.println(in.readLine());
 
             while (true) {

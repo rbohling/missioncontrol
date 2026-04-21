@@ -7,17 +7,17 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MissionControlServer {
+public class Server {
     private static final String HOST = "127.0.0.1";
     private static final int PORT = 5000;
 
     public static void main(String[] args) {
-        System.out.println("Mission Control Server is running on " + HOST + ":" + PORT);
+        System.out.println("Server is running on " + HOST + ":" + PORT);
 
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             while (true) {
                 Socket clientSocket = serverSocket.accept();
-                System.out.println("Station connected: " + clientSocket.getInetAddress());
+                System.out.println("Client connected: " + clientSocket.getInetAddress());
 
                 ClientHandler handler = new ClientHandler(clientSocket);
                 handler.start();
@@ -29,11 +29,11 @@ public class MissionControlServer {
 
     private static class ClientHandler extends Thread {
         private final Socket socket;
-        private final TelemetrySession session;
+        private final Session session;
 
         public ClientHandler(Socket socket) {
             this.socket = socket;
-            this.session = new TelemetrySession();
+            this.session = new Session();
         }
 
         @Override
@@ -42,7 +42,7 @@ public class MissionControlServer {
                     BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                     PrintWriter out = new PrintWriter(socket.getOutputStream(), true)
             ) {
-                out.println("Connected to Mission Control. Enter commands.");
+                out.println("Connected to server. Enter commands.");
 
                 String line;
                 while ((line = in.readLine()) != null) {
@@ -60,7 +60,7 @@ public class MissionControlServer {
                     socket.close();
                 } catch (IOException ignored) {
                 }
-                System.out.println("Station disconnected: " + socket.getInetAddress());
+                System.out.println("Client disconnected: " + socket.getInetAddress());
             }
         }
 
@@ -84,7 +84,7 @@ public class MissionControlServer {
                 case "reset":
                     return handleReset(parts);
                 case "exit":
-                    return "Disconnecting from Mission Control.";
+                    return "Disconnecting.";
                 default:
                     return "Invalid command";
             }
@@ -117,10 +117,10 @@ public class MissionControlServer {
                 return "No dataset loaded. Please send a Dataset command first.";
             }
 
-            List<Integer> sortedData = DatasetProcessor.mergeSort(session.getDataset());
+            List<Integer> sortedData = Processor.bubbleSort(session.getDataset());
             session.setDataset(sortedData);
             session.setSorted(true);
-            return DatasetProcessor.formatList(sortedData);
+            return Processor.formatList(sortedData);
         }
 
         private String handleSearch(String[] parts) {
@@ -141,12 +141,12 @@ public class MissionControlServer {
 
             int index;
             if (session.isSorted()) {
-                index = DatasetProcessor.binarySearch(session.getDataset(), target);
+                index = Processor.binarySearch(session.getDataset(), target);
                 return index >= 0
                         ? "Found at index " + index + " using Binary Search"
                         : "Item not found";
             } else {
-                index = DatasetProcessor.linearSearch(session.getDataset(), target);
+                index = Processor.linearSearch(session.getDataset(), target);
                 return index >= 0
                         ? "Found at index " + index + " using Linear Search"
                         : "Item not found";
@@ -162,7 +162,7 @@ public class MissionControlServer {
                 return "No dataset loaded. Please send a Dataset command first.";
             }
 
-            return DatasetProcessor.calculateStats(session.getDataset());
+            return Processor.calculateStats(session.getDataset());
         }
 
         private String handleReset(String[] parts) {

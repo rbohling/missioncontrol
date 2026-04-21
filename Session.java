@@ -1,11 +1,11 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class TelemetrySession {
+public class Session {
     private List<Integer> dataset;
     private boolean sorted;
 
-    public TelemetrySession() {
+    public Session() {
         this.dataset = null;
         this.sorted = false;
     }
