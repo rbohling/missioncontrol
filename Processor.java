@@ -1,46 +1,21 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class DatasetProcessor {
+public class Processor {
 
-    public static List<Integer> mergeSort(List<Integer> data) {
-        if (data.size() <= 1) {
-            return new ArrayList<>(data);
-        }
-
-        int mid = data.size() / 2;
-        List<Integer> left = mergeSort(data.subList(0, mid));
-        List<Integer> right = mergeSort(data.subList(mid, data.size()));
-
-        return merge(left, right);
-    }
-
-    private static List<Integer> merge(List<Integer> left, List<Integer> right) {
-        List<Integer> merged = new ArrayList<>();
-        int i = 0;
-        int j = 0;
-
-        while (i < left.size() && j < right.size()) {
-            if (left.get(i) <= right.get(j)) {
-                merged.add(left.get(i));
-                i++;
-            } else {
-                merged.add(right.get(j));
-                j++;
+    public static List<Integer> bubbleSort(List<Integer> data) {
+        List<Integer> list = new ArrayList<>(data);
+        int n = list.size();
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = 0; j < n - i - 1; j++) {
+                if (list.get(j) > list.get(j + 1)) {
+                    int temp = list.get(j);
+                    list.set(j, list.get(j + 1));
+                    list.set(j + 1, temp);
+                }
             }
         }
-
-        while (i < left.size()) {
-            merged.add(left.get(i));
-            i++;
-        }
-
-        while (j < right.size()) {
-            merged.add(right.get(j));
-            j++;
-        }
-
-        return merged;
+        return list;
     }
 
     public static int linearSearch(List<Integer> data, int target) {
